@@ -1,3 +1,9 @@
+# Cloaked Hipster (v1)
 
-# Cloaked Hipster
+## Development / Deployment / General Running
 
+```
+./develop.sh
+source bin/activate
+python run.py
+```

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block css %}
+{{ super() }}
+{% assets "scss_app" %}
+<link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+{% endassets %}
+{% endblock %}
+
+{% block body %}
+<h1>Cloaked Hipster <small>(v1)</small></h1>
+{% endblock %}

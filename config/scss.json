@@ -1,0 +1,14 @@
+{
+  "scss_base": {
+    "output": "css/base.css",
+    "inputs": [
+      "scss/base.scss"
+    ]
+  },
+  "scss_app": {
+    "output": "css/app.css",
+    "inputs": [
+      "scss/app.scss"
+    ]
+  }
+}

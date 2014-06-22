@@ -4,6 +4,7 @@ import subprocess
 import datetime
 import requests
 from git import Repo
+from window import current_window
 from repo import GitRepo as gr
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
@@ -51,6 +52,7 @@ class GitHandler(PatternMatchingEventHandler):
         self.user_name = self.repo.config_reader().get_value('user', 'name')
         self.latest_hash = self.repo.head.commit.hexsha
         self.excludes = excludes
+        self.window_history = []
 
         self.gr = gr()
 
@@ -91,6 +93,24 @@ class GitHandler(PatternMatchingEventHandler):
         except requests.ConnectionError as e:
             print '{} NOOO ); it didn\'t work'.format(e.errno)
 
+    def check_window(self):
+        app, title = current_window()
+        self.window_history.append({
+            'app': app,
+            'window_title': title,
+            'time': long(datetime.datetime.now().strftime('%s')),
+        })
+
+    def send_window_dump(self):
+        data = {'data': self.window_history}
+        self.window_history = []    # reset window history
+        try:
+            url = self.ROOT_URL + 'active-window/create/' + self.user_email
+            req = requests.post(url, data=data)
+            print req.status_code
+        except requests.ConnectionError as e:
+            print '{} NOOO ); it didn\'t work for the window dump'.format(e.errno)
+
     def periodic_sync(self):
         print 'checking diff',
         self.latest_hash = self.repo.head.commit.hexsha
@@ -100,6 +120,7 @@ class GitHandler(PatternMatchingEventHandler):
         update = self.gr.update()
         diff = self.format_upload(update)
         self.upload_diff(diff)
+        self.send_window_dump()
 
     def process(self, event):
         self.is_dirty = True
@@ -139,6 +160,7 @@ if __name__ == '__main__':
         last_time = datetime.datetime.now()
         while True:
             now = datetime.datetime.now()
+            gh.window_history()
             if now > last_time + datetime.timedelta(seconds=5):
                 gh.periodic_sync()
                 last_time = now

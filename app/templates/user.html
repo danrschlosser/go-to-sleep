@@ -8,7 +8,19 @@
 
 
 
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script type="text/javascript">
-VARS = "{{JSON_DATA}}"
+var data = [{time:1403404850,lines_inserted:4,lines_changed:2,lines_deleted:0,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403404880,lines_inserted:1,lines_changed:3,lines_deleted:1,files_changed:['foo.html'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403404910,lines_inserted:0,lines_changed:10,lines_deleted:2,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403404940,lines_inserted:4,lines_changed:2,lines_deleted:4,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403404970,lines_inserted:1,lines_changed:6,lines_deleted:1,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403405000,lines_inserted:3,lines_changed:3,lines_deleted:3,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403405030,lines_inserted:20,lines_changed:1,lines_deleted:4,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403405060,lines_inserted:5,lines_changed:2,lines_deleted:8,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403405090,lines_inserted:2,lines_changed:2,lines_deleted:1,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'},{time:1403405120,lines_inserted:4,lines_changed:2,lines_deleted:0,files_changed:['foo.html','bar.js'],base_hash:'abc',user_name:'liviro',email:'polina.viro@gmail.com'}];
+
+var mainW = 600,
+    mainH = 400;
+
+var mainSvg = d3.select.body()
+            .append('svg')
+            .width(mainW)
+            .height(mainH);
+
+
 </script>
 {% endblock %}

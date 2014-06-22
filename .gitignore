@@ -3,6 +3,7 @@ bin
 include
 tmp
 man
+env
 *.pyc
 flask_config.py
 .webassets-cache

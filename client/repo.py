@@ -1,7 +1,7 @@
-
 import git
 import tempfile
 import shutil
+
 
 class GitRepo(object):
 
@@ -12,16 +12,15 @@ class GitRepo(object):
         self.repo.git.commit(m=" 'test'", allow_empty=True)
 
     def update(self):
-        print self.repo.git.status(untracked_files=True)
-        print self.repo.untracked_files
+        changed_files = []
         if self.repo.is_dirty(untracked_files=True):
             self.repo.git.add('.')
             self.repo.git.commit(m=" test")
+            changed_files = self.repo.head.commit.stats.files.keys()
         stats = self.repo.head.commit.stats.total
-        stats['files'] = self.repo.head.commit.stats.files.keys()
+        stats['files'] = changed_files
         del stats['lines']
         return stats
 
     def __del__(self):
         shutil.rmtree(self.path)
-

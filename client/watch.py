@@ -3,6 +3,7 @@ import time
 import subprocess
 import datetime
 import requests
+import json
 from git import Repo
 from repo import GitRepo as gr
 from watchdog.observers import Observer
@@ -73,11 +74,10 @@ class GitHandler(PatternMatchingEventHandler):
             print '{} Could not creat user :('.format(e.errno)
 
     def format_upload(self, update):
-        print update.get('files')
         to_upload = {
             'lines_deleted': update.get('deletions'),
             'lines_inserted': update.get('insertions'),
-            'files_changed': update.get('files'),
+            'files_changed': json.dumps(update.get('files')),
             'time': long(datetime.datetime.now().strftime('%s')),
             'base_hash': self.latest_hash
         }

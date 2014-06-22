@@ -7,7 +7,7 @@ import json
 from bson import ObjectId
 import pymongo
 
-MAGIC = 0.5
+MAGIC = 0.20
 MAGIC2 = 100
 
 user = Blueprint('user', __name__)
@@ -106,22 +106,22 @@ def check_if_fit_for_sleep(email):
     ten_min_records = list(dbdiff.find(param_10_mva))
 
     if hour_records:
-        hour_mva = sum((
+        hour_mva = 1.0 * sum((
             x['lines_inserted'] + x['lines_deleted']
             for x in hour_records
             if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
         ) / len(hour_records)
     else:
-        hour_mva = 0
+        hour_mva = 0.0
 
     if ten_min_records:
-        ten_mva = sum(
+        ten_mva = 1.0 * sum(
             (x['lines_inserted'] + x['lines_deleted']
             for x in ten_min_records
             if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
         ) / len(ten_min_records)
     else:
-        ten_mva = 0
+        ten_mva = 0.0
 
     print hour_mva * MAGIC
     print ten_mva
@@ -130,3 +130,5 @@ def check_if_fit_for_sleep(email):
         return json.dumps({'outcome': True})
 
     return json.dumps({'outcome': False})
+
+

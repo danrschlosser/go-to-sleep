@@ -62,7 +62,7 @@ class GitHandler(PatternMatchingEventHandler):
         self.is_dirty = False
 
         self.sync_dir(self.path, self.tmp_root)
-        self.gr.update()
+        self.gr.update() # immediately update & ignore initial spike diff
 
         self.create_user()
 
@@ -115,6 +115,11 @@ class GitHandler(PatternMatchingEventHandler):
 
     def periodic_sync(self):
         print 'checking diff',
+
+        # if new commit (or more likely a git pull), ignore updates
+        if self.latest_hash != self.repo.head.commit.hexsha:
+            self.gr.update()
+
         self.latest_hash = self.repo.head.commit.hexsha
         if self.is_dirty:
             self.sync_dir(self.path, self.tmp_root)

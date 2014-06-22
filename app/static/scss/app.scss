@@ -29,6 +29,17 @@ input[type="submit"] {
     cursor: pointer;
     font-weight: 300;
 }
+
+.diff-graph-wrapper {
+    position: relative;
+
+    .toggle {
+        position: absolute;
+        top: 1rem;
+        right: 4rem;
+
+    }
+}
 nav {
     width: 100%;
     top: 0rem;

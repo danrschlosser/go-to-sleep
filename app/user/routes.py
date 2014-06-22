@@ -33,12 +33,7 @@ def create_user():
         abort(400)
 
     resp = {
-        'user': {
-            'email': user.email,
-            'name': user.name,
-            'username': user.username,
-            'url': user.url
-        }
+        'user': user.dict()
     }
     return jsonify(resp)
 

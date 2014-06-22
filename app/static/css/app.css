@@ -8,33 +8,58 @@
   font-size: 8rem;
   line-height: 8rem;
   margin-top: 0rem;
-  padding-top: 2rem;
+  padding-top: 1rem;
 }
 /* line 15 */
 .site-title small {
   font-size: 3rem;
 }
 
-/* line 21 */
+/* line 20 */
+nav {
+  width: 100%;
+  top: 0rem;
+  height: 3rem;
+  background-color: #3878cc;
+}
+/* line 25 */
+nav a, nav a:hover {
+  color: inherit;
+}
+/* line 28 */
+nav p {
+  margin: 0;
+  line-height: 3rem;
+  font-size: 1.5rem;
+  color: white;
+  margin-right: 0.5rem;
+  text-align: right;
+}
+/* line 36 */
+nav p small {
+  font-size: 1rem;
+}
+
+/* line 44 */
 .fade {
   transition: 2s ease opacity;
   -webkit-transition: 2s ease opacity;
   -moz-transition: 2s ease opacity;
 }
 
-/* line 27 */
+/* line 50 */
 .hidden {
   opacity: 0;
 }
 
-/* line 31 */
+/* line 54 */
 .tagline {
   font-size: 2.5rem;
   line-height: 2.5rem;
   text-align: center;
 }
 
-/* line 37 */
+/* line 60 */
 .users {
   position: absolute;
   bottom: 2rem;
@@ -43,17 +68,17 @@
   margin: 0;
   padding: 0;
 }
-/* line 45 */
+/* line 68 */
 .users li {
   text-align: right;
 }
-/* line 49 */
+/* line 72 */
 .users p {
   display: inline-block;
   margin: 0;
 }
 
-/* line 56 */
+/* line 79 */
 .usage {
   width: 10rem;
   height: 2rem;
@@ -61,33 +86,43 @@
   font-size: 0;
   vertical-align: bottom;
 }
-/* line 62 */
+/* line 85 */
 .usage .inserts {
   background-color: #709f71;
 }
-/* line 65 */
+/* line 88 */
 .usage .deletes {
   background-color: #d26a64;
 }
-/* line 68 */
+/* line 91 */
 .usage .deletes, .usage .inserts {
   display: inline-block;
   height: 1.5rem;
   margin-top: 0.25rem;
 }
 
+/* line 98 */
+.desc {
+  text-align: center;
+}
+
+/* line 101 */
+.content {
+  margin: 0 2rem;
+}
+
 @media screen and (max-width: 64rem) {
-  /* line 75 */
+  /* line 105 */
   .site-title h1 {
     font-size: 5rem;
     line-height: 5rem;
   }
-  /* line 78 */
+  /* line 108 */
   .site-title h1 small {
     font-size: 2rem;
   }
 
-  /* line 83 */
+  /* line 113 */
   .tagline {
     font-size: 1.5rem;
     line-height: 1.5rem;

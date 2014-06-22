@@ -1,6 +1,7 @@
 from flask import Blueprint, abort, jsonify, url_for, redirect, render_template, request
 from app.user.models import User
 from app.diff.models import Diff
+from app.base.routes import get_num_commits
 from datetime import datetime, timedelta, date
 from mongoengine.errors import MultipleObjectsReturned, DoesNotExist, NotUniqueError
 import json
@@ -50,7 +51,9 @@ def single_user(email):
     derped = list(dbdiff.find(query))
     derped2 = list(dbwindow.find(query))
 
-    return render_template('user.html', userRaw=user.dict(), user=json.dumps(user.dict()), diffs=json.dumps(derped, cls=MongoJsonEncoder), actWindows=json.dumps(derped2, cls=MongoJsonEncoder))
+    commits = get_num_commits()
+
+    return render_template('user.html', commits=commits, userRaw=user.dict(), user=json.dumps(user.dict()), diffs=json.dumps(derped, cls=MongoJsonEncoder), actWindows=json.dumps(derped2, cls=MongoJsonEncoder))
 
 @user.route('/users', methods=['GET'])
 def users():

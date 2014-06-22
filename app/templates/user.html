@@ -1,12 +1,16 @@
 {% extends "app.html" %}
 {% block title %}{{user.name}} - View User{% endblock %}
 {% block body %}
-<h1>Hi, {{userRaw.name}}!</h1>
-<h3>Let's take a quick look at how productive you're being.</h3>
+{{ super() }}
+<div class="content">
+  <h1>Hi, {{userRaw.name}}!</h1>
+  <h2>Let's take a quick look at how productive you're being.</h2>
 
-<p>The graph below shows the # of files you've changed in the given time span. Green is 
-for added lines, red is for removed lines (a la git).</p>
 <div class="diffGraph"></div>
+  <p class="desc">This graph shows the number of files you've changed in a given time
+    span. Green is for added lines, red is for removed lines (a la Git).
+  </p>
+</div>
 
 
 

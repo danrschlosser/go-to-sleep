@@ -1,0 +1,38 @@
+{% extends "app.html" %}
+{% block body %}
+<script type="text/javascript">
+$(function() {
+    setTimeout(function() {
+        $(".tagline").removeClass("hidden");
+        setTimeout(function() {
+            $(".users").removeClass("hidden");
+        }, 1000);
+    },500);
+
+});
+</script>
+<div class="main-box">
+    <div class="site-title">
+        <h1>{{appname}} <small>(v{{commits}})</small></h1>
+    </div>
+    <p class="tagline fade hidden">Sometimes you need to be told to go to sleep.</p>
+    <ul class="users fade hidden">
+        {% for user in users -%}
+        {% with insert_percentage = user.percent_inserts() -%}
+        {% with delete_percentage = user.percent_deletes() -%}
+        <li>
+            <p>
+                <a href="{{user.url}}">{{user.name}}</a> uses {{appname}}
+            </p>
+            <span class="usage fade">
+                <span class="inserts" style="width: {{insert_percentage /10}}rem;"></span>
+                <span class="deletes" style="width: {{delete_percentage /10}}rem;"></span>
+                <span></span>
+            </span>
+        </li>
+        {% endwith %}
+        {% endwith %}
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -23,4 +23,4 @@ def get_num_commits():
 def index():
     commits = get_num_commits()
     users = User.objects()
-    return render_template("app.html", users=users, commits=commits)
+    return render_template("home.html", users=users, commits=commits)

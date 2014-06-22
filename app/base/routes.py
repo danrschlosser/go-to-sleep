@@ -16,11 +16,16 @@ def get_num_commits():
         print "caclulated"
     return num
 
-
-
+def get_home_page(commits):
+    page = cache.get('homepage')
+    if page is None:
+        users = User.objects()
+        page = render_template("home.html", users=users, commits=commits)
+        cache.set('homepage', page, timeout=60)
+        print 'rendered homepage'
+    return page
 
 @base.route('/')
 def index():
     commits = get_num_commits()
-    users = User.objects()
-    return render_template("home.html", users=users, commits=commits)
+    return get_home_page(commits)

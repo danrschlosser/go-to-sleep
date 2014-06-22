@@ -3,6 +3,9 @@ from datetime import datetime
 from flask import url_for
 from app.diff.models import Diff
 from app.active_window.models import ActiveWindow
+import pymongo
+
+client = pymongo.MongoClient()
 
 
 class User(db.Document):
@@ -27,16 +30,42 @@ class User(db.Document):
             self.should_sleep = True
 
     def percent_inserts(self):
-        inserts = sum([diff.lines_inserted for diff in self.diffs])
-        deletes = sum([diff.lines_deleted for diff in self.diffs])
+        db = client.cloakedhipster
+        dbdiff = db.diff
+        diffs = dbdiff.find({
+          'user': self['id']
+        })
+
+        inserts = 0
+        deletes = 0
+        for diff in diffs:
+            try:
+                inserts += diff['lines_inserted']
+                deletes += diff['lines_deleted']
+            except KeyError:
+                pass
+
         if inserts + deletes == 0:
             return 50
         i_p = float(inserts)/(inserts+deletes)*100
         return i_p
 
     def percent_deletes(self):
-        inserts = sum([diff.lines_inserted for diff in self.diffs])
-        deletes = sum([diff.lines_deleted for diff in self.diffs])
+        db = client.cloakedhipster
+        dbdiff = db.diff
+        diffs = dbdiff.find({
+          'user': self['id']
+        })
+
+        inserts = 0
+        deletes = 0
+        for diff in diffs:
+            try:
+                inserts += diff['lines_inserted']
+                deletes += diff['lines_deleted']
+            except KeyError:
+                pass
+
         if inserts + deletes == 0:
             return 50
         d_p = float(deletes)/(inserts+deletes)*100

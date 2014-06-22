@@ -79,7 +79,8 @@ class GitHandler(PatternMatchingEventHandler):
             'lines_inserted': update.get('insertions'),
             'files_changed': json.dumps(update.get('files')),
             'time': long(datetime.datetime.now().strftime('%s')),
-            'base_hash': self.latest_hash
+            'base_hash': self.latest_hash,
+            'remotes': json.dumps([r.url for r in self.repo.remotes])
         }
         return to_upload
 

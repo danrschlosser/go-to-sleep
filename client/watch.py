@@ -15,8 +15,8 @@ from watchdog.events import PatternMatchingEventHandler
 class GitHandler(PatternMatchingEventHandler):
     patterns = ['*']
 
-    # ROOT_URL = 'http://cloakedhipster.dyn.aeturnalus.com:5000/'
-    ROOT_URL = 'http://localhost:5000/'
+    ROOT_URL = 'http://cloakedhipster.dyn.aeturnalus.com:5000/'
+    # ROOT_URL = 'http://localhost:5000/'
 
     @classmethod
     def sync_dir(cls, src, dest):

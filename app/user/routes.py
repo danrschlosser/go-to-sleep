@@ -105,16 +105,23 @@ def check_if_fit_for_sleep(email):
     hour_records = list(dbdiff.find(param_60_mva))
     ten_min_records = list(dbdiff.find(param_10_mva))
 
-    hour_mva = sum((
-        x['lines_inserted'] + x['lines_deleted']
-        for x in hour_records
-        if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
-    ) / len(hour_records)
-    ten_mva = sum(
-        (x['lines_inserted'] + x['lines_deleted']
-        for x in ten_min_records
-        if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
-    ) / len(ten_min_records)
+    if hour_records:
+        hour_mva = sum((
+            x['lines_inserted'] + x['lines_deleted']
+            for x in hour_records
+            if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+        ) / len(hour_records)
+    else:
+        hour_mva = 0
+
+    if ten_min_records:
+        ten_mva = sum(
+            (x['lines_inserted'] + x['lines_deleted']
+            for x in ten_min_records
+            if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+        ) / len(ten_min_records)
+    else:
+        ten_mva = 0
 
     print hour_mva * MAGIC
     print ten_mva

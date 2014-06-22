@@ -7,6 +7,7 @@ import json
 from git import Repo
 from window import current_window
 from repo import GitRepo as gr
+from go_to_sleep import play
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
@@ -135,6 +136,15 @@ class GitHandler(PatternMatchingEventHandler):
     def on_deleted(self, event):
         self.process(event)
 
+    def check_if_sleep(self):
+        try:
+            resp = requests.get(self.ROOT_URL + 'go-to-sleep')
+            data = json.loads(resp.data)
+            if data['outcome']:
+                play.go_to_sleep()
+        except requests.ConnectionError as e:
+            print '{} NOOO ); it didn\'t work for the sleep endpoint'.format(e.errno)
+
 if __name__ == '__main__':
     args = sys.argv[1:]
     observer = Observer()
@@ -164,6 +174,7 @@ if __name__ == '__main__':
             gh.window_history()
             if now > last_time + datetime.timedelta(seconds=5):
                 gh.periodic_sync()
+                gh.check_if_sleep()
                 last_time = now
             time.sleep(1)
     except KeyboardInterrupt:

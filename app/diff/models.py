@@ -5,8 +5,8 @@ class Diff(db.Document):
     """"""
     date_created = db.DateTimeField(required=True, default=datetime.now)
     time = db.LongField(required=True)
-    lines_inserted = db.IntegerField(required=True)
-    lines_deleted = db.IntegerField(required=True)
+    lines_inserted = db.IntField(required=True)
+    lines_deleted = db.IntField(required=True)
     files_changed = db.ListField(db.StringField())
     base_hash = db.StringField(required=True)
     user = db.ReferenceField('User', required=True)

@@ -1,14 +1,14 @@
-from flask import Blueprint, abort, jsonify, url_for, redirect, render_template
+from flask import Blueprint, abort, jsonify, url_for, redirect, render_template, request
 from app.user.models import User
-from app.user.user_service import new_user
+from mongoengine.errors import MultipleObjectsReturned, DoesNotExist
 
 user = Blueprint('user', __name__)
 
-@user.route('/user/<username>', methods=['GET'])
-def single_user(username):
-    if User.objects(username=username).count() != 1:
+@user.route('/user/<email>', methods=['GET'])
+def single_user(email):
+    if User.objects(email=email).count() != 1:
         abort(404)
-    user = User.objects().get(username=username)
+    user = User.objects().get(email=email)
     return render_template('user.html', user=user)
 
 @user.route('/users', methods=['GET'])
@@ -16,11 +16,22 @@ def users():
     """All users DEV ONLY"""
     return jsonify({"users": [user.dict() for user in User.objects()]})
 
-@user.route('/users/create/<email>/<username>', methods=['POST'])
-def create_user(email, username):
-    if User.objects(email=email).count() != 0:
+@user.route('/users/create', methods=['POST'])
+def create_user():
+    if 'email' not in request.form or 'name' not in request.form:
         abort(400)
-    user = new_user(email, username)
+
+    email = request.form['email']
+    name = request.form['name']
+
+    try:
+        user = User.objects().get(email=email)
+    except DoesNotExist:
+        user = User(email=email, name=name)
+        user.save()
+    except MultipleObjectsReturned:
+        abort(400)
+
     resp = {
         'user': {
             'email': user.email,

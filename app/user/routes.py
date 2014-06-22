@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, jsonify, url_for, redirect
+from flask import Blueprint, abort, jsonify, url_for, redirect, render_template
 from app.user.models import User
 from app.user.user_service import new_user
 
@@ -9,13 +9,12 @@ def single_user(username):
     if User.objects(username=username).count() != 1:
         abort(404)
     user = User.objects().get(username=username)
-    return jsonify(user.dict())
+    return render_template('user.html', user=user)
 
 @user.route('/users', methods=['GET'])
 def users():
     """All users DEV ONLY"""
     return jsonify({"users": [user.dict() for user in User.objects()]})
-
 
 @user.route('/users/create/<email>/<username>', methods=['POST'])
 def create_user(email, username):
@@ -31,7 +30,6 @@ def create_user(email, username):
         }
     }
     return jsonify(resp)
-
 
 @user.route('/users/wipe', methods=['GET'])
 def wipe_users():

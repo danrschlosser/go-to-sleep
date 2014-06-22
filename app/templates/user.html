@@ -1,0 +1,14 @@
+{% extends "app.html" %}
+{% block title %}{{user.name}} - View User{% endblock %}
+{% block body %}
+<h1>{{user.name}}</h1>
+<h2>{{user.username}}</h2>
+<h2>{{user.email}}</h2>
+<a href="{{user.url}}">{{user.url}}</a>
+
+
+
+<script type="text/javascript">
+VARS = "{{JSON_DATA}}"
+</script>
+{% endblock %}

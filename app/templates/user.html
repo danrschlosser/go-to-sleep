@@ -2,6 +2,21 @@
 {% block title %}{{userRaw.name}} - View User{% endblock %}
 {% block body %}
 {{ super() }}
+<script type="text/javascript">
+$(function() {
+  d3.selectAll("input").on("change", change);
+
+  var timeout = setTimeout(function() {
+   d3.select("input[value=\"grouped\"]").property("checked", true).each(change);
+  }, 2000);
+
+  function change() {
+   clearTimeout(timeout);
+   if (this.value === "grouped") transitionGrouped();
+   else transitionStacked();
+  }
+});
+</script>
 <div class="content">
   <h1>Hi, {{userRaw.name}}!</h1>
   <h2>Let's take a quick look at how productive you're being.
@@ -12,7 +27,15 @@
   </small>
   </h2>
 
-<div class="diffGraph"></div>
+<div class="diff-graph-wrapper">
+  <div class="toggle">
+    <form>
+     <label><input type="radio" name="mode" value="grouped" checked> Grouped</label>
+     <label><input type="radio" name="mode" value="stacked"> Stacked</label>
+    </form>
+  </div>
+  <div class="diffGraph"></div>
+</div>
   <p class="desc">This graph shows the number of files you've changed in a given time
     span. Green is for added lines, red is for removed lines (a la Git).
   </p>

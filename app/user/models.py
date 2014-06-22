@@ -28,7 +28,7 @@ class User(db.Document):
         self.date_modified = datetime.now()
 
     def __repr__(self):
-        return "<User %s (id=%s)>" % (self.username, self.id)
+        return "<User %s (id=%s)>" % (self.email, self.id)
 
     def dict(self):
         return {

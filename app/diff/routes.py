@@ -4,11 +4,11 @@ from app.user.models import User
 from app.repo.models import Repo
 from mongoengine.errors import MultipleObjectsReturned, DoesNotExist
 import json
+import re
 
 diff = Blueprint('diff', __name__)
 
-FIELDS = set(('time', 'lines_inserted', 'lines_deleted', 'files_changed',
-              'base_hash', 'remotes'))
+FIELDS = {'time', 'lines_inserted', 'lines_deleted', 'files_changed', 'base_hash', 'remotes'}
 
 @diff.route('/diff/<email>', methods=['POST'])
 def new_diff(email):
@@ -22,9 +22,27 @@ def new_diff(email):
         abort(400)
 
     diff_resource = dict((key, request.form[key]) for key in FIELDS)
-    diff_resource['files_changed'] = json.loads(diff_resource.get('files_changed'))
-    remotes = json.loads(diff_resource.get('remotes'))
-    diff_resource['remotes'] = Repo.objects(slug__in=remotes)
+    fc = diff_resource.get('files_changed')
+    diff_resource['files_changed'] = json.loads(fc)
+    rem = diff_resource.get('remotes')
+
+    repo_re = re.compile(r'(\w+://)?(.+@)*([\w\d\.]+)(:[\d]+)?/*:?(.*)/(.*).git')
+
+    diff_resource['remotes'] = []
+    for remote_url in json.loads(rem):
+        matches = repo_re.match(remote_url)
+        repo_url = '{}-{}'.format(matches.group(5), matches.group(6))
+        repo_username = matches.group(5)
+        diff_resource['remotes'].append(repo_url)
+
+    diff_resource['remotes'] = Repo.objects(slug__in=diff_resource['remotes'])
+
+    print diff_resource['remotes']
+
+
+
+    del diff_resource['remotes']
+>>>>>>> Stashed changes
     diff_resource['user'] = user
 
     diff = Diff(**diff_resource)

@@ -4,6 +4,7 @@ from flask import url_for
 from app.diff.models import Diff
 from app.active_window.models import ActiveWindow
 
+
 class User(db.Document):
     """"""
     date_created   = db.DateTimeField(required=True, default=datetime.now)

@@ -2,9 +2,6 @@
 
 {% block css %}
 {{ super() }}
-{% assets "scss_app" %}
-<link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
-{% endassets %}
 {% endblock %}
 {% set appname = "Cloaked Hipster" %}
 {% block body %}

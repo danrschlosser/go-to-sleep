@@ -53,9 +53,8 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reset.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/app.css') }}">
 
-    {% assets "scss_base" %}
-    <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
-    {% endassets %}
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/app.css">
 
     {% endblock css%}
 

@@ -68,7 +68,6 @@ def create_user():
     print email, name
     print User.objects()
     print User.objects(email=email)
-    print User.objects().get(email=email)
 
     try:
         user = User.objects().get(email=email)

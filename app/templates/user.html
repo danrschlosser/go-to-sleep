@@ -1,21 +1,57 @@
 {% extends "app.html" %}
 {% block title %}{{user.name}} - View User{% endblock %}
 {% block body %}
-<h1>{{userRaw.name}}</h1>
-<h2>{{userRaw.email}}</h2>
-<a href="{{userRaw.url}}">{{userRaw.name}}</a>
+<h1>Hi, {{userRaw.name}}!</h1>
+<h3>Let's take a quick look at how productive you're being.</h3>
+
+<p>The graph below shows the # of files you've changed in the given time span. Green is 
+for added lines, red is for removed lines (a la git).</p>
 <div class="diffGraph"></div>
 
 
 
 <script src="http://underscorejs.org/underscore-min.js" ></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <style>
 .axis line,
 .axis path {
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
+}
+
+rect:hover {
+  fill: grey;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
 }
 </style>
 <script type="text/javascript">
@@ -31,13 +67,17 @@ var cleanData = [];
 cleanData[0] = _.map(data, function(elem) {
   return {
     y : elem.lines_inserted || 0,
-    x : elem.time
+    x : elem.time,
+    type : 'inserted',
+    color : '#709f71'
   };
 });
 cleanData[1] = _.map(data, function(elem) {
   return {
     y : elem.lines_deleted || 0,
-    x : elem.time
+    x : elem.time,
+    type : 'deleted',
+    color :  '#d26a64'
   };
 });
 
@@ -79,11 +119,20 @@ var yAxis = d3.svg.axis()
               .tickPadding(6)
               .orient("left");
 
+var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function(d) {
+              return "<strong>Lines "+d.type+":</strong> <span style='color:"+d.color+"'>" + d.y + "</span>";
+            });
+
 var svg = d3.select(".diffGraph").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.call(tip);
 
 var layer = svg.selectAll(".layer")
                .data(layers)
@@ -97,7 +146,9 @@ var rect = layer.selectAll("rect")
                 .attr("x", function(d) { return x(d.x*1000); })
                 .attr("y", height)
                 .attr("width", width/m)
-                .attr("height", 0);
+                .attr("height", 0)
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide);
 
 rect.transition()
     .delay(function(d, i) { return (1000 / m) * i; })

@@ -10,6 +10,7 @@ class User(db.Document):
     date_created   = db.DateTimeField(required=True, default=datetime.now)
     name           = db.StringField(required=True, max_length=510)
     email          = db.EmailField(required=True, unique=True)
+    should_sleep   = db.BooleanField(default=False)
     diffs          = db.ListField(db.ReferenceField(Diff))
     active_windows = db.ListField(db.ReferenceField(ActiveWindow))
 
@@ -17,6 +18,13 @@ class User(db.Document):
         'allow_inheritance': True,
         'indexes': ['email']
     }
+
+    def clean(self):
+        try :
+            if self.should_sleep is None:
+                self.should_sleep = True
+        except AttributeError:
+            self.should_sleep = True
 
     def percent_inserts(self):
         inserts = sum([diff.lines_inserted for diff in self.diffs])
@@ -50,5 +58,6 @@ class User(db.Document):
             'email': self.email,
             'name': self.name,
             'url': self.url,
-            'diffs_count': self.diffs_count
+            'diffs_count': self.diffs_count,
+            'should_sleep': self.should_sleep
         }

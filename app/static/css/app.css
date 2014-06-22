@@ -15,18 +15,33 @@
   font-size: 3rem;
 }
 
-/* line 20 */
+/* line 19 */
+form {
+  display: inline-block;
+}
+
+/* line 22 */
+input[type="submit"] {
+  border: none;
+  padding: 0.5rem;
+  background-color: #3878cc;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* line 30 */
 nav {
   width: 100%;
   top: 0rem;
   height: 3rem;
   background-color: #3878cc;
 }
-/* line 25 */
+/* line 35 */
 nav a, nav a:hover {
   color: inherit;
 }
-/* line 28 */
+/* line 38 */
 nav p {
   margin: 0;
   line-height: 3rem;
@@ -35,31 +50,31 @@ nav p {
   margin-right: 0.5rem;
   text-align: right;
 }
-/* line 36 */
+/* line 46 */
 nav p small {
   font-size: 1rem;
 }
 
-/* line 44 */
+/* line 54 */
 .fade {
   transition: 2s ease opacity;
   -webkit-transition: 2s ease opacity;
   -moz-transition: 2s ease opacity;
 }
 
-/* line 50 */
+/* line 60 */
 .hidden {
   opacity: 0;
 }
 
-/* line 54 */
+/* line 64 */
 .tagline {
   font-size: 2.5rem;
   line-height: 2.5rem;
   text-align: center;
 }
 
-/* line 60 */
+/* line 70 */
 .users {
   position: absolute;
   bottom: 2rem;
@@ -68,17 +83,17 @@ nav p small {
   margin: 0;
   padding: 0;
 }
-/* line 68 */
+/* line 78 */
 .users li {
   text-align: right;
 }
-/* line 72 */
+/* line 82 */
 .users p {
   display: inline-block;
   margin: 0;
 }
 
-/* line 79 */
+/* line 89 */
 .usage {
   width: 10rem;
   height: 2rem;
@@ -86,43 +101,43 @@ nav p small {
   font-size: 0;
   vertical-align: bottom;
 }
-/* line 85 */
+/* line 95 */
 .usage .inserts {
   background-color: #709f71;
 }
-/* line 88 */
+/* line 98 */
 .usage .deletes {
   background-color: #d26a64;
 }
-/* line 91 */
+/* line 101 */
 .usage .deletes, .usage .inserts {
   display: inline-block;
   height: 1.5rem;
   margin-top: 0.25rem;
 }
 
-/* line 98 */
+/* line 108 */
 .desc {
   text-align: center;
 }
 
-/* line 101 */
+/* line 111 */
 .content {
   margin: 0 2rem;
 }
 
 @media screen and (max-width: 64rem) {
-  /* line 105 */
+  /* line 115 */
   .site-title h1 {
     font-size: 5rem;
     line-height: 5rem;
   }
-  /* line 108 */
+  /* line 118 */
   .site-title h1 small {
     font-size: 2rem;
   }
 
-  /* line 113 */
+  /* line 123 */
   .tagline {
     font-size: 1.5rem;
     line-height: 1.5rem;

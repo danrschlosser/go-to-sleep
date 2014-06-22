@@ -1,10 +1,16 @@
 {% extends "app.html" %}
-{% block title %}{{user.name}} - View User{% endblock %}
+{% block title %}{{userRaw.name}} - View User{% endblock %}
 {% block body %}
 {{ super() }}
 <div class="content">
   <h1>Hi, {{userRaw.name}}!</h1>
-  <h2>Let's take a quick look at how productive you're being.</h2>
+  <h2>Let's take a quick look at how productive you're being.
+  <small>
+    <form method="post" action="/user/{{userRaw.email}}/sleep">
+      <input type="submit" value="Tell {{userRaw.name}} to go to sleep">
+    </form>
+  </small>
+  </h2>
 
 <div class="diffGraph"></div>
   <p class="desc">This graph shows the number of files you've changed in a given time

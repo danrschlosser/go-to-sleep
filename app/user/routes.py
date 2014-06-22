@@ -23,6 +23,16 @@ class MongoJsonEncoder(json.JSONEncoder):
             return unicode(obj)
         return json.JSONEncoder.default(self, obj)
 
+@user.route('/user/<email>/sleep', methods=['POST'])
+def sleep(email):
+    try:
+        user = User.objects().get(email=email)
+    except Exception:
+        abort(400)
+    user.should_sleep = True
+    user.save()
+    return redirect(url_for('user.single_user', email=email))
+
 @user.route('/user/<email>', methods=['GET'])
 def single_user(email):
     if User.objects(email=email).count() != 1:
@@ -123,7 +133,9 @@ def check_if_fit_for_sleep(email):
 
         print 'hour:{}, ten_minutes:{}'.format(hour_mva, ten_mva)
 
-        if hour_mva * MAGIC > ten_mva:
+        if hour_mva * MAGIC > ten_mva or user.should_sleep:
+            user.should_sleep = False
+            user.save()
             return json.dumps({'outcome': True})
 
         return json.dumps({'outcome': False})

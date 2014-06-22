@@ -15,7 +15,6 @@ def new_diff(email):
     except (MultipleObjectsReturned, DoesNotExist):
         abort(400)
 
-    print request.form.keys
     if not FIELDS.issubset(request.form.keys()):
         abort(400)
 

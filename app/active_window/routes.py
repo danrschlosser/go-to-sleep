@@ -24,10 +24,11 @@ def create_active_window(email):
     for active_window_resource in data:
         time = active_window_resource.get('time')
         title = active_window_resource.get('title')
+        app = active_window_resource.get('app')
         if not time or not title:
             abort(400)
 
-        aw = ActiveWindow(time=time, title=title, user=user)
+        aw = ActiveWindow(time=time, title=title, user=user, app=app)
         aw.save()
         user.active_windows.append(aw)
 

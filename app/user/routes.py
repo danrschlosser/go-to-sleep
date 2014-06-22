@@ -1,11 +1,11 @@
 from flask import Blueprint, abort, jsonify, url_for, redirect, render_template, request
 from app.user.models import User
 from app.diff.models import Diff
+from datetime import datetime, timedelta, date
 from mongoengine.errors import MultipleObjectsReturned, DoesNotExist
 import json
 from bson import ObjectId
 import pymongo
-import datetime
 
 user = Blueprint('user', __name__)
 client = pymongo.MongoClient()
@@ -13,7 +13,7 @@ client = pymongo.MongoClient()
 
 class MongoJsonEncoder(json.JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, (datetime.datetime, datetime.date)):
+        if isinstance(obj, (datetime, date)):
             return obj.isoformat()
         elif isinstance(obj, ObjectId):
             return unicode(obj)
@@ -80,3 +80,23 @@ def wipe_users():
     for user in User.objects():
         user.delete()
     return redirect(url_for('.users'))
+
+@user.route('/go-to-sleep/<email>', methods=['GET'])
+def check_if_fit_for_sleep(email):
+    current_time = long(datetime.now().strftime('%s'))
+
+    param_60_mva = {
+        'email': email,
+        'date_created__lte': current_time,
+        'date_created__gte': long((datetime.now() - timedelta(seconds=60*60)).strftime('%s')),
+    }
+    param_10_mva = {
+        'email': email,
+        'date_created__lte': current_time,
+        'date_created__gte': long((datetime.now() - timedelta(seconds=10*60)).strftime('%s')),
+    }
+
+    hour_mva = User.objects(**param_60_mva)
+    ten_mva = User.objects(**param_10_mva)
+    # TODO: mongo magic
+    return jsonify({'outcome': False})

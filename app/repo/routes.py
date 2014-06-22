@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, jsonify, request
+from flask import Blueprint, abort, jsonify, request, render_template
 from app.repo.models import Repo
 from mongoengine.errors import MultipleObjectsReturned, DoesNotExist
 
@@ -10,7 +10,7 @@ def single_repo(slug):
         repo = Repo.objects.get(slug=slug)
     except (MultipleObjectsReturned, DoesNotExist):
         abort(400)
-    return jsonify(repo.dict())
+    return render_template("repo.html", repo=repo)
 
 @repo.route('/repo/create', methods=['POST'])
 def create_repo():

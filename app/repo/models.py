@@ -18,10 +18,6 @@ class Repo(db.Document):
     def url(self):
         return url_for('repo.single_repo', slug=self.slug)
 
-    def clean(self):
-        """Update date_modified."""
-        self.date_modified = datetime.now()
-
     def __repr__(self):
         return "<Repo %s (id=%s)>" % (self.username, self.id)
 

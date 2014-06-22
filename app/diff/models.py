@@ -7,8 +7,9 @@ class Diff(db.Document):
     time            = db.LongField(required=True)
     lines_inserted  = db.IntField(required=True)
     lines_deleted   = db.IntField(required=True)
-    files_changed   = db.ListField(db.StringField())
     base_hash       = db.StringField(required=True)
+    files_changed   = db.ListField(db.StringField())
+    remotes         = db.ListField(db.StringField())
     user            = db.ReferenceField('User', required=True)
 
     meta = {
@@ -19,10 +20,6 @@ class Diff(db.Document):
     @property
     def email(self):
         return self.user.email
-
-    def clean(self):
-        """Update date_modified."""
-        self.date_modified = datetime.now()
 
     def __repr__(self):
         return "<Diff %s (id=%s)>" % (self.username, self.id)

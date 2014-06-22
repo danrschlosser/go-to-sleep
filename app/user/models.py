@@ -2,13 +2,15 @@ from app import db
 from datetime import datetime
 from flask import url_for
 from app.diff.models import Diff
+from app.active_window.models import ActiveWindow
 
 class User(db.Document):
     """"""
-    date_created = db.DateTimeField(required=True, default=datetime.now)
-    name         = db.StringField(required=True, max_length=510)
-    email        = db.EmailField(required=True, unique=True)
-    diffs        = db.ListField(db.ReferenceField(Diff))
+    date_created   = db.DateTimeField(required=True, default=datetime.now)
+    name           = db.StringField(required=True, max_length=510)
+    email          = db.EmailField(required=True, unique=True)
+    diffs          = db.ListField(db.ReferenceField(Diff))
+    active_windows = db.ListField(db.ReferenceField(ActiveWindow))
 
     meta = {
         'allow_inheritance': True,
@@ -22,10 +24,6 @@ class User(db.Document):
     @property
     def url(self):
         return url_for('user.single_user', email=self.email, _external=True)
-
-    def clean(self):
-        """Update date_modified."""
-        self.date_modified = datetime.now()
 
     def __repr__(self):
         return "<User %s (id=%s)>" % (self.email, self.id)

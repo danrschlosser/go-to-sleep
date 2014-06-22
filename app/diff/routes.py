@@ -1,12 +1,14 @@
 from flask import Blueprint, abort, request, jsonify
 from app.diff.models import Diff
 from app.user.models import User
+from app.repo.models import Repo
 from mongoengine.errors import MultipleObjectsReturned, DoesNotExist
 import json
 
 diff = Blueprint('diff', __name__)
 
-FIELDS = set(('time', 'lines_inserted', 'lines_deleted', 'files_changed', 'base_hash', 'remotes'))
+FIELDS = set(('time', 'lines_inserted', 'lines_deleted', 'files_changed',
+              'base_hash', 'remotes'))
 
 @diff.route('/diff/<email>', methods=['POST'])
 def new_diff(email):
@@ -20,13 +22,10 @@ def new_diff(email):
         abort(400)
 
     diff_resource = dict((key, request.form[key]) for key in FIELDS)
-    fc = diff_resource.get('files_changed')
     diff_resource['files_changed'] = json.loads(diff_resource.get('files_changed'))
-    rem = diff_resource.get('remotes')
-    diff_resource['remotes'] = json.loads(diff_resource.get('remotes'))
-    del diff_resource['remotes']
+    remotes = json.loads(diff_resource.get('remotes'))
+    diff_resource['remotes'] = Repo.objects(slug__in=remotes)
     diff_resource['user'] = user
-
 
     diff = Diff(**diff_resource)
     diff.save()

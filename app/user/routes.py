@@ -7,6 +7,9 @@ import json
 from bson import ObjectId
 import pymongo
 
+MAGIC = 0.5
+MAGIC2 = 100
+
 user = Blueprint('user', __name__)
 client = pymongo.MongoClient()
 
@@ -83,20 +86,40 @@ def wipe_users():
 
 @user.route('/go-to-sleep/<email>', methods=['GET'])
 def check_if_fit_for_sleep(email):
+    user = User.objects().get(email=email)
     current_time = long(datetime.now().strftime('%s'))
-
     param_60_mva = {
-        'email': email,
-        'date_created__lte': current_time,
-        'date_created__gte': long((datetime.now() - timedelta(seconds=60*60)).strftime('%s')),
+        'user': user['id'],
+        'time': {'$lte': current_time},
+        'time': {'$gte': long((datetime.now() - timedelta(seconds=60*60)).strftime('%s'))},
     }
     param_10_mva = {
-        'email': email,
-        'date_created__lte': current_time,
-        'date_created__gte': long((datetime.now() - timedelta(seconds=10*60)).strftime('%s')),
+        'user': user['id'],
+        'time': {'$lte': current_time},
+        'time': {'$gte': long((datetime.now() - timedelta(seconds=10*60)).strftime('%s'))},
     }
 
-    hour_mva = User.objects(**param_60_mva)
-    ten_mva = User.objects(**param_10_mva)
-    # TODO: mongo magic
-    return jsonify({'outcome': False})
+    db = client.cloakedhipster
+    dbdiff = db.diff
+
+    hour_records = list(dbdiff.find(param_60_mva))
+    ten_min_records = list(dbdiff.find(param_10_mva))
+
+    hour_mva = sum((
+        x['lines_inserted'] + x['lines_deleted']
+        for x in hour_records
+        if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+    ) / len(hour_records)
+    ten_mva = sum(
+        (x['lines_inserted'] + x['lines_deleted']
+        for x in ten_min_records
+        if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+    ) / len(ten_min_records)
+
+    print hour_mva * MAGIC
+    print ten_mva
+
+    if hour_mva * MAGIC > ten_mva:
+        return json.dumps({'outcome': True})
+
+    return json.dumps({'outcome': False})

@@ -34,3 +34,4 @@ def create_active_window(email):
 
     user.save()
     return "Success!"
+

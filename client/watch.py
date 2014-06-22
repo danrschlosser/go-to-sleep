@@ -175,8 +175,8 @@ if __name__ == '__main__':
             gh.check_window()
             if now > last_time + datetime.timedelta(seconds=5):
                 gh.periodic_sync()
-                gh.check_if_sleep()
                 last_time = now
+            gh.check_if_sleep()
             time.sleep(1)
     except KeyboardInterrupt:
         observer.stop()

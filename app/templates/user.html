@@ -17,6 +17,7 @@
     span. Green is for added lines, red is for removed lines (a la Git).
   </p>
 </div>
+<div class="windowGraph"></div>
 
 
 
@@ -63,6 +64,30 @@ rect:hover {
   top: 100%;
   left: 0;
 }
+circle {
+  fill: #ccc;
+  stroke: #999;
+  pointer-events: all;
+}
+
+circle.parent {
+  fill: #1f77b4;
+  fill-opacity: .1;
+  stroke: steelblue;
+}
+
+circle.parent:hover {
+  stroke: #ff7f0e;
+  stroke-width: .5px;
+}
+
+circle.child {
+  pointer-events: none;
+}
+
+text.child {
+  display: none;
+}
 </style>
 <script type="text/javascript">
 var data = {{diffs|safe}};
@@ -72,14 +97,21 @@ var user = {{user|safe}};
 var actWindows = {{actWindows|safe}};
 
 var reducedWindows = _.reduce(actWindows, function(memo, val, index) {
-  var title = val.app + ' : ' + val.title;
-  if(memo[title]) {
-    memo[title] += index;
+  if( _.find(memo.children, function(elem) { return elem.name === val.app; } ) ) {
+    var found = _.find(memo.children, function(elem) { return elem.name === val.app; } );
+    var indFound = _.indexOf(memo.children, found);
+    if(_.find(memo.children[indFound].children, function(elem) { return elem.name === val.title; } )){
+      var foundT = _.find(memo.children[indFound].children, function(elem) { return elem.name === val.title; } );
+      var indFoundT = _.indexOf(memo.children[indFound].children, foundT);
+      memo.children[indFound].children[indFoundT].size += index;
+    } else {
+      memo.children[indFound].children.push({name:val.title, size:index});
+    }
   } else {
-    memo[title] = index;
+    memo.children.push({name: val.app, children:[{name:val.title, size:index}]});
   }
   return memo;
-}, {});
+}, {name:"open windows", children:[]});
 
 
 var cleanData = [];
@@ -222,6 +254,54 @@ function transitionStacked() {
       .attr("x", function(d) { return x(d.x*1000); })
       .attr("width", width / m);
 }
+
+var wC = 1280,
+    hC = 800,
+    rC = 720,
+    xC = d3.scale.linear().range([0, rC]),
+    yC = d3.scale.linear().range([0, rC]),
+    node,
+    root;
+
+var pack = d3.layout.pack()
+             .size([rC, rC])
+             .value(function(d) { return d.size; })
+
+var vis = d3.select(".windowGraph").insert("svg:svg", "h2")
+            .attr("width", wC)
+            .attr("height", hC)
+            .append("svg:g")
+            .attr("transform", "translate(" + (wC - rC) / 2 + "," + (hC - rC) / 2 + ")");
+
+  data = reducedWindows;
+  node = root = data;
+
+  var nodes = pack.nodes(root);
+
+  vis.selectAll("circle")
+    .data(nodes)
+    .enter().append("svg:circle")
+    .attr("class", function(d) { return d.children ? "parent" : "child"; })
+    .attr("cx", function(d) { return d.x; })
+    .attr("cy", function(d) { return d.y; })
+    .attr("r", function(d) { return d.r; });
+    .on('mouseover', function(d) {
+      if(d.children) {
+        
+      }
+    })
+
+  vis.selectAll("text")
+    .data(nodes)
+    .enter().append("svg:text")
+    .attr("class", function(d) { return d.children ? "parent" : "child"; })
+    .attr("x", function(d) { return d.x; })
+    .attr("y", function(d) { return d.y; })
+    .attr("dy", ".35em")
+    .attr("text-anchor", "middle")
+    .style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
+    .text(function(d) { return d.name; });
+
 
 
 

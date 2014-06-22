@@ -3,13 +3,13 @@ from datetime import datetime
 
 class Diff(db.Document):
     """"""
-    date_created = db.DateTimeField(required=True, default=datetime.now)
-    time = db.LongField(required=True)
-    lines_inserted = db.IntField(required=True)
-    lines_deleted = db.IntField(required=True)
-    files_changed = db.ListField(db.StringField())
-    base_hash = db.StringField(required=True)
-    user = db.ReferenceField('User', required=True)
+    date_created    = db.DateTimeField(required=True, default=datetime.now)
+    time            = db.LongField(required=True)
+    lines_inserted  = db.IntField(required=True)
+    lines_deleted   = db.IntField(required=True)
+    files_changed   = db.ListField(db.StringField())
+    base_hash       = db.StringField(required=True)
+    user            = db.ReferenceField('User', required=True)
 
     meta = {
         'allow_inheritance': True,
@@ -25,7 +25,7 @@ class Diff(db.Document):
         self.date_modified = datetime.now()
 
     def __repr__(self):
-        return "<User %s (id=%s)>" % (self.username, self.id)
+        return "<Diff %s (id=%s)>" % (self.username, self.id)
 
     def dict(self):
         return {

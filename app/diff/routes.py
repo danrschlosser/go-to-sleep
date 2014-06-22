@@ -27,6 +27,7 @@ def new_diff(email):
     del diff_resource['remotes']
     diff_resource['user'] = user
 
+
     diff = Diff(**diff_resource)
     diff.save()
 

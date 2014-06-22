@@ -12,8 +12,12 @@ $small: 0.8rem;
 body, html {
     width: 100%;
     height: 100%;
+    margin:0;
+    padding: 0;
     font-family: 'Open Sans', sans-serif;
     font-size: $rem;
+    font-weight: 300;
+    background-color: $offwhite;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -70,6 +74,9 @@ em {
 p {
    line-height: 1.3rem;
 }
+ul {
+    list-style: none;
+}
 hr {
     border: 0;
 
@@ -77,7 +84,11 @@ hr {
     background-color: $lightgray;
 }
 
-a, a:hover {
+a {
     text-decoration: none;
-    color: inherit;
+    color: $blue;
+    &:hover {
+        text-decoration: none;
+        color: $fadedblue;
+    }
 }

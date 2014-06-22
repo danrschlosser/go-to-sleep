@@ -1,1 +1,95 @@
-/* Basic app styles here */
+/* line 4 */
+.site-title {
+  background-color: #3878cc;
+  color: white;
+}
+/* line 7 */
+.site-title h1 {
+  font-size: 8rem;
+  line-height: 8rem;
+  margin-top: 0rem;
+  padding-top: 2rem;
+}
+/* line 15 */
+.site-title small {
+  font-size: 3rem;
+}
+
+/* line 21 */
+.fade {
+  transition: 2s ease opacity;
+  -webkit-transition: 2s ease opacity;
+  -moz-transition: 2s ease opacity;
+}
+
+/* line 27 */
+.hidden {
+  opacity: 0;
+}
+
+/* line 31 */
+.tagline {
+  font-size: 2.5rem;
+  line-height: 2.5rem;
+  text-align: center;
+}
+
+/* line 37 */
+.users {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+/* line 45 */
+.users li {
+  text-align: right;
+}
+/* line 49 */
+.users p {
+  display: inline-block;
+  margin: 0;
+}
+
+/* line 56 */
+.usage {
+  width: 10rem;
+  height: 2rem;
+  display: inline-block;
+  font-size: 0;
+  vertical-align: bottom;
+}
+/* line 62 */
+.usage .inserts {
+  background-color: #709f71;
+}
+/* line 65 */
+.usage .deletes {
+  background-color: #d26a64;
+}
+/* line 68 */
+.usage .deletes, .usage .inserts {
+  display: inline-block;
+  height: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+@media screen and (max-width: 64rem) {
+  /* line 75 */
+  .site-title h1 {
+    font-size: 5rem;
+    line-height: 5rem;
+  }
+  /* line 78 */
+  .site-title h1 small {
+    font-size: 2rem;
+  }
+
+  /* line 83 */
+  .tagline {
+    font-size: 1.5rem;
+    line-height: 1.5rem;
+  }
+}

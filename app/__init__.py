@@ -1,11 +1,13 @@
 from flask import Flask
 from flask.ext.mongoengine import MongoEngine
 from flask.ext.assets import Environment, Bundle
+from werkzeug.contrib.cache import SimpleCache
 import json
 
 db = MongoEngine()
 app = None
 assets = None
+cache = SimpleCache()
 
 def create_app(**config_overrides):
     """This is normal setup code for a Flask app, but we give the option

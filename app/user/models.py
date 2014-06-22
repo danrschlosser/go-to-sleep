@@ -18,6 +18,22 @@ class User(db.Document):
         'indexes': ['email']
     }
 
+    def percent_inserts(self):
+        inserts = sum([diff.lines_inserted for diff in self.diffs])
+        deletes = sum([diff.lines_deleted for diff in self.diffs])
+        if inserts + deletes == 0:
+            return 50
+        i_p = float(inserts)/(inserts+deletes)*100
+        return i_p
+
+    def percent_deletes(self):
+        inserts = sum([diff.lines_inserted for diff in self.diffs])
+        deletes = sum([diff.lines_deleted for diff in self.diffs])
+        if inserts + deletes == 0:
+            return 50
+        d_p = float(deletes)/(inserts+deletes)*100
+        return d_p
+
     @property
     def diffs_count(self):
         return len(self.diffs)

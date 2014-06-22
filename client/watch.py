@@ -63,7 +63,7 @@ class GitHandler(PatternMatchingEventHandler):
 
         self.sync_dir(self.path, self.tmp_root)
         self.gr.update() # immediately update & ignore initial spike diff
-
+        print self.user_name
         self.create_user()
 
     def create_user(self):

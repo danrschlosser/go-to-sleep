@@ -2,7 +2,7 @@ from flask import Blueprint, abort, jsonify, url_for, redirect, render_template,
 from app.user.models import User
 from app.diff.models import Diff
 from datetime import datetime, timedelta, date
-from mongoengine.errors import MultipleObjectsReturned, DoesNotExist
+from mongoengine.errors import MultipleObjectsReturned, DoesNotExist, NotUniqueError
 import json
 from bson import ObjectId
 import pymongo
@@ -34,6 +34,7 @@ def single_user(email):
     """
     db = client.cloakedhipster
     dbdiff = db.diff
+    dbwindow = db.active_window
 
     query = {
         'user': user['id'],
@@ -41,18 +42,15 @@ def single_user(email):
 
     if 'after' in request.args or 'before' in request.args:
         query['time'] = {}
-        print request.args['after']
         if 'after' in request.args:
             query['time']['$gte'] = long(request.args['after'])
         if 'before' in request.args:
             query['time']['$lte'] = long(request.args['before'])
 
     derped = list(dbdiff.find(query))
-    print 'fetched: {}'.format(len(derped)),
+    derped2 = list(dbwindow.find(query))
 
-    #objs = Diff.objects(user=user, **args)
-    #derped = {'diffs': [d.dict() for d in objs]}
-    return render_template('user.html', user=user, diffs=json.dumps(derped, cls=MongoJsonEncoder))
+    return render_template('user.html', userRaw=user.dict(), user=json.dumps(user.dict()), diffs=json.dumps(derped, cls=MongoJsonEncoder), actWindows=json.dumps(derped2, cls=MongoJsonEncoder))
 
 @user.route('/users', methods=['GET'])
 def users():
@@ -67,6 +65,11 @@ def create_user():
     if not email or not name:
         abort(400)
 
+    print email, name
+    print User.objects()
+    print User.objects(email=email)
+    print User.objects().get(email=email)
+
     try:
         user = User.objects().get(email=email)
     except DoesNotExist:
@@ -74,6 +77,8 @@ def create_user():
         user.save()
     except MultipleObjectsReturned:
         abort(500)
+    except NotUniqueError:
+        abort(203)
 
     resp = {'user': user.dict()}
     return jsonify(resp)
@@ -86,49 +91,42 @@ def wipe_users():
 
 @user.route('/go-to-sleep/<email>', methods=['GET'])
 def check_if_fit_for_sleep(email):
-    user = User.objects().get(email=email)
-    current_time = long(datetime.now().strftime('%s'))
-    param_60_mva = {
-        'user': user['id'],
-        'time': {'$lte': current_time},
-        'time': {'$gte': long((datetime.now() - timedelta(seconds=60*60)).strftime('%s'))},
-    }
-    param_10_mva = {
-        'user': user['id'],
-        'time': {'$lte': current_time},
-        'time': {'$gte': long((datetime.now() - timedelta(seconds=10*60)).strftime('%s'))},
-    }
+    try:
+      user = User.objects().get(email=email)
+      current_time = long(datetime.now().strftime('%s'))
+      param_60_mva = {
+          'user': user['id'],
+          'time': {'$lte': current_time},
+          'time': {'$gte': long((datetime.now() - timedelta(seconds=60*60)).strftime('%s'))},
+      }
+      param_10_mva = {
+          'user': user['id'],
+          'time': {'$lte': current_time},
+          'time': {'$gte': long((datetime.now() - timedelta(seconds=10*60)).strftime('%s'))},
+      }
 
-    db = client.cloakedhipster
-    dbdiff = db.diff
+      db = client.cloakedhipster
+      dbdiff = db.diff
 
-    hour_records = list(dbdiff.find(param_60_mva))
-    ten_min_records = list(dbdiff.find(param_10_mva))
+      hour_records = list(dbdiff.find(param_60_mva))
+      ten_min_records = list(dbdiff.find(param_10_mva))
 
-    if hour_records:
-        hour_mva = 1.0 * sum((
-            x['lines_inserted'] + x['lines_deleted']
-            for x in hour_records
-            if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
-        ) / len(hour_records)
-    else:
-        hour_mva = 0.0
+      hour_mva = 1.0 * sum((
+          x['lines_inserted'] + x['lines_deleted']
+          for x in hour_records
+          if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+      ) / len(hour_records)
+      ten_mva = 1.0 * sum(
+          (x['lines_inserted'] + x['lines_deleted']
+          for x in ten_min_records
+          if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+      ) / len(ten_min_records)
 
-    if ten_min_records:
-        ten_mva = 1.0 * sum(
-            (x['lines_inserted'] + x['lines_deleted']
-            for x in ten_min_records
-            if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
-        ) / len(ten_min_records)
-    else:
-        ten_mva = 0.0
+      print 'hour:{}, ten_minutes:{}'.format(hour_mva, ten_mva)
 
-    print hour_mva * MAGIC
-    print ten_mva
+      if hour_mva * MAGIC > ten_mva:
+          return json.dumps({'outcome': True})
 
-    if hour_mva * MAGIC > ten_mva:
-        return json.dumps({'outcome': True})
-
-    return json.dumps({'outcome': False})
-
-
+      return json.dumps({'outcome': False})
+    except DoesNotExist:
+      abort(403)

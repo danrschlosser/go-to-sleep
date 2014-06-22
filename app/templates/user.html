@@ -1,40 +1,47 @@
 {% extends "app.html" %}
 {% block title %}{{user.name}} - View User{% endblock %}
 {% block body %}
-<h1>{{user.name}}</h1>
-<h2>{{user.username}}</h2>
-<h2>{{user.email}}</h2>
-<a href="{{user.url}}">{{user.name}}</a>
+<h1>{{userRaw.name}}</h1>
+<h2>{{userRaw.email}}</h2>
+<a href="{{userRaw.url}}">{{userRaw.name}}</a>
+<div class="diffGraph"></div>
 
 
 
 <script src="http://underscorejs.org/underscore-min.js" ></script>
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<style>
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
 <script type="text/javascript">
 var data = {{diffs|safe}};
+
+var user = {{user|safe}};
+
+var actWindows = {{actWindows|safe}};
+
 
 var cleanData = [];
 
 cleanData[0] = _.map(data, function(elem) {
   return {
-    y : elem.lines_inserted,
+    y : elem.lines_inserted || 0,
     x : elem.time
   };
 });
 cleanData[1] = _.map(data, function(elem) {
   return {
-    y : elem.lines_changed,
-    x : elem.time
-  };
-});
-cleanData[2] = _.map(data, function(elem) {
-  return {
-    y : elem.lines_deleted,
+    y : elem.lines_deleted || 0,
     x : elem.time
   };
 });
 
-var n = 3, // number of layers
+var n = 2, // number of layers
     m = cleanData[0].length, // number of samples per layer
     stack = d3.layout.stack(),
     layers = stack(cleanData),
@@ -43,25 +50,22 @@ var n = 3, // number of layers
     xMin = d3.min(layers[0], function(d) { return d.x; }),
     xMax = d3.max(layers[0], function(d) { return d.x; });
 
-var margin = {top: 40, right: 10, bottom: 20, left: 10},
-  width = 960 - margin.left - margin.right,
+var margin = {top: 40, right: 10, bottom: 20, left: 60},
+  width = 1200 - margin.left - margin.right,
   height = 500 - margin.top - margin.bottom;
 
-var x = d3.scale.ordinal()
-          .domain(d3.range(
-            xMin,
-            xMax,
-            (xMax - xMin) / (m - 1)
-          ))
-          .rangeRoundBands([0, width], .08);
+var x = d3.time.scale()
+          .domain([new Date(xMin*1000), new Date(xMax*1000)])
+          .rangeRound([0, width]);
 
-var y = d3.scale.linear()
-          .domain([0, yStackMax])
-          .range([height, 0]);
+var y = d3.scale.log()
+          .clamp(true)
+          .domain([1, yStackMax])
+          .rangeRound([height, 0]);
 
 var color = d3.scale.ordinal()
               .domain([0, n - 1])
-              .range(["#709f71", "#d26a64","#f4c774"]);
+              .range(["#709f71", "#d26a64"]);
 
 var xAxis = d3.svg.axis()
               .scale(x)
@@ -69,7 +73,13 @@ var xAxis = d3.svg.axis()
               .tickPadding(6)
               .orient("bottom");
 
-var svg = d3.select("body").append("svg")
+var yAxis = d3.svg.axis()
+              .scale(y)
+              .tickSize(0)
+              .tickPadding(6)
+              .orient("left");
+
+var svg = d3.select(".diffGraph").append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
@@ -84,13 +94,13 @@ var layer = svg.selectAll(".layer")
 var rect = layer.selectAll("rect")
                 .data(function(d) { return d; })
                 .enter().append("rect")
-                .attr("x", function(d) { return x(d.x); })
+                .attr("x", function(d) { return x(d.x*1000); })
                 .attr("y", height)
-                .attr("width", x.rangeBand())
+                .attr("width", width/m)
                 .attr("height", 0);
 
 rect.transition()
-    .delay(function(d, i) { return i * 10; })
+    .delay(function(d, i) { return (1000 / m) * i; })
     .attr("y", function(d) { return y(d.y0 + d.y); })
     .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
 
@@ -98,6 +108,11 @@ svg.append("g")
    .attr("class", "x axis")
    .attr("transform", "translate(0," + height + ")")
    .call(xAxis);
+
+svg.append("g")
+   .attr("class", "y axis")
+   .attr("transform", "translate(0,0)")
+   .call(yAxis);
 
 d3.selectAll("input").on("change", change);
 
@@ -112,29 +127,29 @@ function change() {
 }
 
 function transitionGrouped() {
-  y.domain([0, yGroupMax]);
+  y.domain([1, yGroupMax]);
 
   rect.transition()
-      .duration(500)
-      .delay(function(d, i) { return i * 10; })
-      .attr("x", function(d, i, j) { return x(d.x) + x.rangeBand() / n * j; })
-      .attr("width", x.rangeBand() / n)
+      .duration(1000)
+      .delay(function(d, i) { return (1000 / m) * i; })
+      .attr("x", function(d, i, j) { return x(d.x*1000) + (width / m) / n * j; })
+      .attr("width", (width / m) / n )
       .transition()
       .attr("y", function(d) { return y(d.y); })
       .attr("height", function(d) { return height - y(d.y); });
 }
 
 function transitionStacked() {
-  y.domain([0, yStackMax]);
+  y.domain([1, yStackMax]);
 
   rect.transition()
-      .duration(500)
-      .delay(function(d, i) { return i * 10; })
+      .duration(1000)
+      .delay(function(d, i) { return (1000 / m) * i; })
       .attr("y", function(d) { return y(d.y0 + d.y); })
       .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); })
       .transition()
-      .attr("x", function(d) { return x(d.x); })
-      .attr("width", x.rangeBand());
+      .attr("x", function(d) { return x(d.x*1000); })
+      .attr("width", width / m);
 }
 
 

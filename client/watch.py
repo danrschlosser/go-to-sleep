@@ -15,8 +15,8 @@ from watchdog.events import PatternMatchingEventHandler
 class GitHandler(PatternMatchingEventHandler):
     patterns = ['*']
 
-    ROOT_URL = 'http://cloakedhipster.dyn.aeturnalus.com:5000/'
-    # ROOT_URL = 'http://localhost:5000/'
+    # ROOT_URL = 'http://cloakedhipster.dyn.aeturnalus.com:5000/'
+    ROOT_URL = 'http://localhost:5000/'
 
     @classmethod
     def sync_dir(cls, src, dest):
@@ -99,12 +99,12 @@ class GitHandler(PatternMatchingEventHandler):
         app, title = current_window()
         self.window_history.append({
             'app': app,
-            'window_title': title,
+            'title': title,
             'time': long(datetime.datetime.now().strftime('%s')),
         })
 
     def send_window_dump(self):
-        data = {'data': self.window_history}
+        data = {'data': json.dumps(self.window_history)}
         self.window_history = []    # reset window history
         try:
             url = self.ROOT_URL + 'active-window/create/' + self.user_email
@@ -138,10 +138,11 @@ class GitHandler(PatternMatchingEventHandler):
 
     def check_if_sleep(self):
         try:
-            resp = requests.get(self.ROOT_URL + 'go-to-sleep')
-            data = json.loads(resp.data)
-            if data['outcome']:
-                play.go_to_sleep()
+            resp = requests.get(self.ROOT_URL + 'go-to-sleep/' + self.user_email)
+            if resp.status_code == 200:
+                data = json.loads(resp.text)
+                if data['outcome']:
+                    play.go_to_sleep()
         except requests.ConnectionError as e:
             print '{} NOOO ); it didn\'t work for the sleep endpoint'.format(e.errno)
 
@@ -171,7 +172,7 @@ if __name__ == '__main__':
         last_time = datetime.datetime.now()
         while True:
             now = datetime.datetime.now()
-            gh.window_history()
+            gh.check_window()
             if now > last_time + datetime.timedelta(seconds=5):
                 gh.periodic_sync()
                 gh.check_if_sleep()

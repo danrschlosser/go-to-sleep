@@ -8,9 +8,12 @@ with open(script_name) as f:
     scpt = f.read()
 
 def current_window():
-    resp = osascript(scpt)
-    if  not ',' in resp:
+    try:
+        resp = osascript(scpt)
+        if  not ',' in resp:
+            return '', ''
+        app, title = string.split(resp, ',', 1)
+        return app, title
+    except Exception:
         return '', ''
-    app, title = string.split(resp, ',', 1)
-    return app, title
 

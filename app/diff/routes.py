@@ -8,7 +8,7 @@ import re
 
 diff = Blueprint('diff', __name__)
 
-FIELDS = {'time', 'lines_inserted', 'lines_deleted', 'files_changed', 'base_hash', 'remotes'}
+FIELDS = set(['time', 'lines_inserted', 'lines_deleted', 'files_changed', 'base_hash', 'remotes'])
 
 @diff.route('/diff/<email>', methods=['POST'])
 def new_diff(email):

@@ -284,12 +284,12 @@ var vis = d3.select(".windowGraph").insert("svg:svg", "h2")
     .attr("class", function(d) { return d.children ? "parent" : "child"; })
     .attr("cx", function(d) { return d.x; })
     .attr("cy", function(d) { return d.y; })
-    .attr("r", function(d) { return d.r; });
+    .attr("r", function(d) { return d.r; })
     .on('mouseover', function(d) {
       if(d.children) {
-        
+        console.log(d);
       }
-    })
+    });
 
   vis.selectAll("text")
     .data(nodes)

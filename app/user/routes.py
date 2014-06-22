@@ -92,41 +92,48 @@ def wipe_users():
 @user.route('/go-to-sleep/<email>', methods=['GET'])
 def check_if_fit_for_sleep(email):
     try:
-      user = User.objects().get(email=email)
-      current_time = long(datetime.now().strftime('%s'))
-      param_60_mva = {
-          'user': user['id'],
-          'time': {'$lte': current_time},
-          'time': {'$gte': long((datetime.now() - timedelta(seconds=60*60)).strftime('%s'))},
-      }
-      param_10_mva = {
-          'user': user['id'],
-          'time': {'$lte': current_time},
-          'time': {'$gte': long((datetime.now() - timedelta(seconds=10*60)).strftime('%s'))},
-      }
+        user = User.objects().get(email=email)
+        current_time = long(datetime.now().strftime('%s'))
+        param_60_mva = {
+            'user': user['id'],
+            'time': {'$lte': current_time},
+            'time': {'$gte': long((datetime.now() - timedelta(seconds=60*60)).strftime('%s'))},
+        }
+        param_10_mva = {
+            'user': user['id'],
+            'time': {'$lte': current_time},
+            'time': {'$gte': long((datetime.now() - timedelta(seconds=10*60)).strftime('%s'))},
+        }
 
-      db = client.cloakedhipster
-      dbdiff = db.diff
+        db = client.cloakedhipster
+        dbdiff = db.diff
 
-      hour_records = list(dbdiff.find(param_60_mva))
-      ten_min_records = list(dbdiff.find(param_10_mva))
+        hour_records = list(dbdiff.find(param_60_mva))
+        ten_min_records = list(dbdiff.find(param_10_mva))
 
-      hour_mva = 1.0 * sum((
-          x['lines_inserted'] + x['lines_deleted']
-          for x in hour_records
-          if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
-      ) / len(hour_records)
-      ten_mva = 1.0 * sum(
-          (x['lines_inserted'] + x['lines_deleted']
-          for x in ten_min_records
-          if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
-      ) / len(ten_min_records)
+        if hour_records:
+            hour_mva = 1.0 * sum((
+                x['lines_inserted'] + x['lines_deleted']
+                for x in hour_records
+                if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+            ) / len(hour_records)
+        else:
+            hour_mva = 0.0
 
-      print 'hour:{}, ten_minutes:{}'.format(hour_mva, ten_mva)
+        if ten_min_records:
+            ten_mva = 1.0 * sum(
+                (x['lines_inserted'] + x['lines_deleted']
+                for x in ten_min_records
+                if x['lines_inserted'] + x['lines_deleted'] < MAGIC2)
+            ) / len(ten_min_records)
+        else:
+            ten_mva = 0.0
 
-      if hour_mva * MAGIC > ten_mva:
-          return json.dumps({'outcome': True})
+        print 'hour:{}, ten_minutes:{}'.format(hour_mva, ten_mva)
 
-      return json.dumps({'outcome': False})
+        if hour_mva * MAGIC > ten_mva:
+            return json.dumps({'outcome': True})
+
+        return json.dumps({'outcome': False})
     except DoesNotExist:
       abort(403)

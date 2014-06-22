@@ -72,7 +72,7 @@ class GitHandler(PatternMatchingEventHandler):
                 'name': self.user_name,
                 'email': self.user_email
             })
-            print req.status_code
+            print 'CREATE USER: ', req.status_code
         except requests.ConnectionError as e:
             print '{} Could not creat user :('.format(e.errno)
 

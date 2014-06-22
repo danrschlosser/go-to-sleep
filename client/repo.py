@@ -12,14 +12,17 @@ class GitRepo(object):
         self.repo.git.commit(m=" 'test'", allow_empty=True)
 
     def update(self):
-        changed_files = []
+        stats = {
+            'deletions': 0,
+            'insertions': 0,
+            'files': [],
+        }
         if self.repo.is_dirty(untracked_files=True):
             self.repo.git.add('.')
             self.repo.git.commit(m=" test")
-            changed_files = self.repo.head.commit.stats.files.keys()
-        stats = self.repo.head.commit.stats.total
-        stats['files'] = changed_files
-        del stats['lines']
+            stats = self.repo.head.commit.stats.total
+            stats['files'] = self.repo.head.commit.stats.files.keys()
+            del stats['lines']
         return stats
 
     def __del__(self):

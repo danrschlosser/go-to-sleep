@@ -18,11 +18,11 @@ def users():
 
 @user.route('/users/create', methods=['POST'])
 def create_user():
-    if 'email' not in request.form or 'name' not in request.form:
-        abort(400)
+    email = request.form.get('email')
+    name = request.form.get('name')
 
-    email = request.form['email']
-    name = request.form['name']
+    if not email or not name:
+        abort(400)
 
     try:
         user = User.objects().get(email=email)
@@ -30,11 +30,9 @@ def create_user():
         user = User(email=email, name=name)
         user.save()
     except MultipleObjectsReturned:
-        abort(400)
+        abort(500)
 
-    resp = {
-        'user': user.dict()
-    }
+    resp = {'user': user.dict()}
     return jsonify(resp)
 
 @user.route('/users/wipe', methods=['GET'])

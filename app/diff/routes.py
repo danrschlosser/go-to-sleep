@@ -5,7 +5,7 @@ from mongoengine.errors import MultipleObjectsReturned, DoesNotExist
 
 diff = Blueprint('diff', __name__)
 
-FIELDS = set(['time', 'lines_inserted', 'lines_deleted', 'file_changed',
+FIELDS = set(['time', 'lines_inserted', 'lines_deleted', 'files_changed',
           'base_hash'])
 
 @diff.route('/diff/<email>', methods=['POST'])
@@ -15,6 +15,7 @@ def new_diff(email):
     except (MultipleObjectsReturned, DoesNotExist):
         abort(400)
 
+    print request.form.keys
     if not FIELDS.issubset(request.form.keys()):
         abort(400)
 

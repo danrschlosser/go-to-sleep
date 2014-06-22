@@ -18,7 +18,6 @@ def new_diff(email):
         abort(403)
 
     if not FIELDS.issubset(set(request.form.keys())):
-        print FIELDS ^ set(request.form.keys()), request.form.keys()
         abort(400)
 
     diff_resource = dict((key, request.form[key]) for key in FIELDS)
@@ -31,18 +30,18 @@ def new_diff(email):
     diff_resource['remotes'] = []
     for remote_url in json.loads(rem):
         matches = repo_re.match(remote_url)
-        repo_url = '{}-{}'.format(matches.group(5), matches.group(6))
-        repo_username = matches.group(5)
-        diff_resource['remotes'].append(repo_url)
+        repo_url = '{}:{}'.format(matches.group(5), matches.group(6))
+        repo_username = matches.group(6)
+        try:
+            repo = Repo.objects().get(slug=repo_url)
+        except DoesNotExist:
+            repo = Repo(name=repo_username, slug=repo_url)
+            repo.save()
+        except MultipleObjectsReturned:
+            abort(500)
 
-    diff_resource['remotes'] = Repo.objects(slug__in=diff_resource['remotes'])
+        diff_resource['remotes'].append(repo)
 
-    print diff_resource['remotes']
-
-
-
-    del diff_resource['remotes']
->>>>>>> Stashed changes
     diff_resource['user'] = user
 
     diff = Diff(**diff_resource)

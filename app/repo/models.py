@@ -3,7 +3,8 @@ from datetime import datetime
 from flask import url_for
 
 class Repo(db.Document):
-    """"""
+    """
+    """
     date_created = db.DateTimeField(required=True, default=datetime.now)
     contributors = db.ListField(db.ReferenceField('User'))
     name         = db.StringField(required=True)
@@ -19,7 +20,7 @@ class Repo(db.Document):
         return url_for('repo.single_repo', slug=self.slug)
 
     def __repr__(self):
-        return "<Repo %s (id=%s)>" % (self.username, self.id)
+        return "<Repo %s (id=%s)>" % (self.name, self.id)
 
     def dict(self):
         return {

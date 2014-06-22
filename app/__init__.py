@@ -41,8 +41,9 @@ def register_blueprints():
     from app.base.routes import base
     from app.user.routes import user
     from app.diff.routes import diff
+    from app.repo.routes import repo
 
-    blueprints = [base, user, diff]
+    blueprints = (base, user, diff, repo)
     for blueprint in blueprints:
         app.register_blueprint(blueprint)
 

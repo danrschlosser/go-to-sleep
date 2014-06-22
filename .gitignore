@@ -8,3 +8,4 @@ flask_config.py
 .webassets-cache
 .lesshst
 .Python
+.idea

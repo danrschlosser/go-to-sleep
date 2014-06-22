@@ -65,10 +65,6 @@ def create_user():
     if not email or not name:
         abort(400)
 
-    print email, name
-    print User.objects()
-    print User.objects(email=email)
-
     try:
         user = User.objects().get(email=email)
     except DoesNotExist:
@@ -81,12 +77,6 @@ def create_user():
 
     resp = {'user': user.dict()}
     return jsonify(resp)
-
-@user.route('/users/wipe', methods=['GET'])
-def wipe_users():
-    for user in User.objects():
-        user.delete()
-    return redirect(url_for('.users'))
 
 @user.route('/go-to-sleep/<email>', methods=['GET'])
 def check_if_fit_for_sleep(email):

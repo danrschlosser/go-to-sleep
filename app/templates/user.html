@@ -61,6 +61,16 @@ var user = {{user|safe}};
 
 var actWindows = {{actWindows|safe}};
 
+var reducedWindows = _.reduce(actWindows, function(memo, val, index) {
+  var title = val.app + ' : ' + val.title;
+  if(memo[title]) {
+    memo[title] += index;
+  } else {
+    memo[title] = index;
+  }
+  return memo;
+}, {});
+
 
 var cleanData = [];
 

@@ -1,6 +1,6 @@
 /* line 4 */
 .site-title {
-  background-color: #3878cc;
+  background-color: #3878CC;
   color: white;
 }
 /* line 7 */
@@ -25,7 +25,7 @@ input[type="submit"] {
   border: none;
   font-family: 'Open Sans', sans-serif;
   padding: 0.5rem;
-  background-color: #3878cc;
+  background-color: #3878CC;
   color: white;
   font-size: 1.7rem;
   cursor: pointer;
@@ -48,7 +48,7 @@ nav {
   width: 100%;
   top: 0rem;
   height: 3rem;
-  background-color: #3878cc;
+  background-color: #3878CC;
 }
 /* line 48 */
 nav a, nav a:hover {
